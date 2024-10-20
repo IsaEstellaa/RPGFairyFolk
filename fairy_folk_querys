@@ -1,0 +1,205 @@
+-- CRIACAO DO BANCO
+
+CREATE DATABASE Fairy_Folk;
+
+-- CRIACAO DAS TABELAS
+
+CREATE TABLE Conta (
+    conta_id INT PRIMARY KEY AUTO_INCREMENT,
+    conta_email VARCHAR(225) NOT NULL UNIQUE,
+    conta_senha VARCHAR(45) NOT NULL,
+    conta_nickname VARCHAR(30) NOT NULL UNIQUE,
+    conta_data_criacao DATE NOT NULL,
+    conta_data_nasc DATE NOT NULL,
+    conta_telefone VARCHAR(15) NOT NULL
+);
+
+CREATE TABLE Classe (
+    classe_id INT PRIMARY KEY AUTO_INCREMENT,
+    classe_nome VARCHAR(30) NOT NULL,
+    classe_descricao TEXT NOT NULL,
+    classe_vida_base INT NOT NULL,
+    classe_forca_base INT NOT NULL
+);
+
+CREATE TABLE Habilidade (
+    habilidade_id INT PRIMARY KEY AUTO_INCREMENT,
+    habilidade_nome VARCHAR(60) NOT NULL,
+    habilidade_pontuacao INT NOT NULL,
+    habilidade_descricao TEXT,
+    habilidade_nivel INT NOT NULL
+);
+
+CREATE TABLE Inventario (
+    inventario_id INT PRIMARY KEY AUTO_INCREMENT,
+    inventario_nome VARCHAR(60) NOT NULL,
+    inventario_nivel INT NOT NULL,
+    inventario_descricao TEXT NOT NULL,
+    inventario_qtde_disponivel INT NOT NULL
+);
+
+CREATE TABLE Personagem (
+    personagem_id INT PRIMARY KEY AUTO_INCREMENT,
+    personagem_nome VARCHAR(50) NOT NULL, 
+    personagem_conta_id INT NOT NULL,
+    personagem_classe_id INT NOT NULL,
+    personagem_inventario_id INT NOT NULL,
+    personagem_vida INT NOT NULL,
+    personagem_forca INT,
+    personagem_fraqueza INT,
+    personagem_nivel INT NOT NULL,
+    personagem_habilidade_id INT,
+    FOREIGN KEY (personagem_conta_id) REFERENCES Conta(conta_id),
+    FOREIGN KEY (personagem_classe_id) REFERENCES Classe(classe_id),
+    FOREIGN KEY (personagem_inventario_id) REFERENCES Inventario(inventario_id),
+    FOREIGN KEY (personagem_habilidade_id) REFERENCES Habilidade(habilidade_id)
+);
+
+CREATE TABLE Habilidade_classes (
+    personagem_id INT NOT NULL,
+    habilidade_id INT NOT NULL,
+    classe_id INT NOT NULL,
+    FOREIGN KEY (personagem_id) REFERENCES Personagem(personagem_id),
+    FOREIGN KEY (habilidade_id) REFERENCES Habilidade(habilidade_id),
+    FOREIGN KEY (classe_id) REFERENCES Classe(classe_id)
+);
+
+CREATE TABLE Proficiencia (
+    proficiencia_id INT PRIMARY KEY AUTO_INCREMENT,
+    proficiencia_nome VARCHAR(30) NOT NULL,
+    proficiencia_descricao TEXT
+);
+
+CREATE TABLE Proficiencia_habilidades (
+    personagem_id INT NOT NULL,
+    proficiencia_id INT NOT NULL,
+    habilidade_id INT NOT NULL,
+    FOREIGN KEY (personagem_id) REFERENCES Personagem(personagem_id),
+    FOREIGN KEY (proficiencia_id) REFERENCES Proficiencia(proficiencia_id),
+    FOREIGN KEY (habilidade_id) REFERENCES Habilidade(habilidade_id)
+);
+
+CREATE TABLE Raridade (
+    raridade_id INT PRIMARY KEY AUTO_INCREMENT,
+    raridade_nome VARCHAR(30) NOT NULL,
+    raridade_chance_drop INT NOT NULL
+);
+
+CREATE TABLE Equipamento (
+    equipamento_id INT PRIMARY KEY AUTO_INCREMENT,
+    equipamento_nome VARCHAR(100) NOT NULL, 
+    equipamento_classe_id INT NOT NULL,
+    equipamento_ataque INT,
+    equipamento_defesa INT,
+    equipamento_valor INT NOT NULL,
+    equipamento_raridade_id INT NOT NULL,
+    FOREIGN KEY (equipamento_classe_id) REFERENCES Classe(classe_id),
+    FOREIGN KEY (equipamento_raridade_id) REFERENCES Raridade(raridade_id)
+);
+
+CREATE TABLE Equipamentos_classes (
+    equipamento_id INT NOT NULL,
+    classe_id INT NOT NULL,
+    FOREIGN KEY (equipamento_id) REFERENCES Equipamento(equipamento_id),
+    FOREIGN KEY (classe_id) REFERENCES Classe(classe_id)
+);
+
+CREATE TABLE Itens_inventario (
+    personagem_id INT NOT NULL,
+    equipamento_id INT NOT NULL,
+    itens_quantidade INT NOT NULL,
+    FOREIGN KEY (personagem_id) REFERENCES Personagem(personagem_id),
+    FOREIGN KEY (equipamento_id) REFERENCES Equipamento(equipamento_id)
+);
+
+CREATE TABLE Alinhamento (
+    alinhamento_id INT PRIMARY KEY AUTO_INCREMENT,
+    alinhamento_nome VARCHAR(30) NOT NULL
+);
+
+CREATE TABLE Personagem_secundario (
+    personagemsec_id INT PRIMARY KEY AUTO_INCREMENT,
+    personagemsec_nome VARCHAR(50) NOT NULL, 
+    personagemsec_descricao TEXT,
+    personagemsec_alinhamento_id INT NOT NULL,
+    personagemsec_classe_id INT,
+    personagemsec_forca INT,
+    personagemsec_defesa INT,
+    FOREIGN KEY (personagemsec_alinhamento_id) REFERENCES Alinhamento(alinhamento_id),
+    FOREIGN KEY (personagemsec_classe_id) REFERENCES Classe(classe_id)
+);
+
+CREATE TABLE Mundo (
+    mundo_id INT PRIMARY KEY AUTO_INCREMENT,
+    mundo_nome VARCHAR(80) NOT NULL,
+    mundo_descricao TEXT NOT NULL,
+    mundo_classe_id INT NOT NULL,
+    FOREIGN KEY (mundo_classe_id) REFERENCES Classe(classe_id)
+)
+
+-- CRIACAO DOS INSERTS
+
+INSERT INTO Conta (conta_email, conta_senha, conta_nickname, conta_data_criacao, conta_data_nasc, conta_telefone)
+VALUES 
+('vinicius13@gmail.com', 'vini1313cius', 'Vinicius13oMelhor', '2024-10-18', '2000-05-15', '987654321'),
+('isaavoy@gmail.com', 'isinhagameplay014', 'Isaavoy', '2024-10-18', '2000-08-02', '998567290'),
+('biazits@gmail.com', 'biabbbmi014', 'Biazits', '2024-10-17', '2002-09-20', '998602948'),
+('gigicastorzikzik@gmail.com', 'gigigigi900', 'Gicast03', '2024-10-19', '2003-02-04', '998475655'),
+('vishkkkkk@gmail.com', 'vishkk', 'eitaOlhaVish014', '2024-10-19', '2001-08-21', '998645728');
+
+INSERT INTO Classe (classe_nome, classe_descricao, classe_vida_base, classe_forca_base)
+VALUES 
+('Fada', 'Seres mágicos e pequenos, especializados em magia de cura e ilusões. Elas são ágeis, mas frágeis.', 50, 20),
+('Elfo', 'Uma raça ancestral com grande afinidade pela natureza e habilidades em arco e magia. São graciosos e ágeis.', 80, 50),
+('Sereia', 'Seres aquáticos com cantos hipnotizantes, capazes de controlar as águas e influenciar as mentes.', 70, 40),
+('Arqueiro', 'Exímio em ataques à longa distância com arco e flechas, movendo-se com agilidade no campo de batalha.', 80, 70),
+('Bárbaro', 'Um guerreiro brutal que canaliza sua fúria em ataques devastadores, sacrifica defesa por força extrema.', 130, 100),
+('Mago', 'Especialista em magias poderosas e habilidades à distância, mas frágil em combate físico.', 60, 30);
+
+INSERT INTO Habilidade (habilidade_nome, habilidade_pontuacao, habilidade_descricao, habilidade_nivel)
+VALUES 
+('Curar Luz', 30, 'Uma leve magia que cura ferimentos pequenos e restaura um pouco de energia.', 1),
+('Ilusão de Brilho', 20, 'Cria uma luz cintilante que confunde os inimigos temporariamente.', 1),
+('Tiro Preciso', 50, 'Um tiro de flecha altamente preciso que atinge o ponto fraco do inimigo.', 2),
+('Chamada da Floresta', 40, 'Convoca animais da floresta para ajudar no combate.', 2),
+('Canto Hipnótico', 60, 'Emite um canto mágico que controla as mentes dos inimigos por um curto período.', 3),
+('Onda Gigante', 80, 'Convoca uma poderosa onda que causa dano e afoga inimigos.', 4),
+('Flecha de Fogo', 40, 'Dispara uma flecha envolta em chamas, causando dano adicional por queimadura.', 2),
+('Multidisparo', 60, 'Dispara várias flechas ao mesmo tempo, atingindo múltiplos inimigos.', 3),
+('Fúria Bárbara', 90, 'O Bárbaro entra em estado de fúria, aumentando sua força significativamente por um curto período.', 3),
+('Impacto Avassalador', 80, 'Um golpe poderoso que pode derrubar o inimigo e causar grandes danos.', 4),
+('Bola de Fogo', 70, 'Lança uma esfera de fogo que explode ao contato, causando dano em área.', 3),
+('Escudo Arcano', 50, 'Cria uma barreira mágica que absorve parte dos danos sofridos.', 2);
+
+INSERT INTO Inventario (inventario_nome, inventario_nivel, inventario_descricao, inventario_qtde_disponivel)
+VALUES
+('Mochilinha', 1, 'Uma mochila simples, perfeita para iniciantes. Possui 10 slots disponíveis para itens.', 10),
+('Mochila de Aventura', 2, 'Ideal para aventuras longas, esta mochila oferece 20 slots para armazenar equipamentos e suprimentos.', 20),
+('Mochila Mágica', 3, 'Uma mochila encantada que permite armazenar itens mágicos sem limites de peso, com 30 slots.', 30),
+('Super Mega Mochila', 4, 'Uma mochila gigante com capacidade para 50 itens, perfeita para quem precisa carregar muito.', 50),
+('Mochila do Arqueiro', 2, 'Projetada especialmente para arqueiros, com 15 slots para flechas e equipamentos leves.', 15),
+('Bolsa do Mago', 3, 'Ideal para magos, esta bolsa possui 12 slots para armazenar pergaminhos e ingredientes mágicos.', 12),
+('Mochila Dimensional', 5, 'Uma mochila mágica que permite armazenar até 100 itens, acessíveis de qualquer lugar.', 100);
+
+INSERT INTO Proficiencia (proficiencia_nome, proficiencia_descricao)
+VALUES 
+('Aprendiz', 'Um usuário que já possui alguma experiência e está aprendendo a aplicar suas habilidades com mais eficácia.'),
+('Intermediário', 'Um indivíduo que já domina o básico e pode realizar tarefas mais complexas com segurança.'),
+('Avançado', 'Um profissional que tem um bom controle de suas habilidades e pode enfrentar desafios maiores.'),
+('Especialista', 'Um expert em sua área, capaz de realizar feitos notáveis e treinar outros.'),
+('Mestre', 'Um verdadeiro mestre, com habilidades excepcionais e um conhecimento profundo de sua arte.'),
+('Divino', 'Um nível de habilidade quase sobrenatural, com poder e controle que desafiam a compreensão mortal.');
+
+INSERT INTO Raridade (raridade_nome, raridade_chance_drop)
+VALUES
+('Comum', 70),
+('Incomum', 20),
+('Rara', 7),
+('Épica', 2),
+('Lendária', 1);
+
+INSERT INTO Alinhamento (alinhamento_nome)
+VALUES 
+('Bem'),
+('Mal'),
+('Neutro');
